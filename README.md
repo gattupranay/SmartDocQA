@@ -1,242 +1,129 @@
-# 🤖 SmartDocQA - AI-Powered Document Q&A System
+SmartDocQA 🤖
+Ever found yourself digging through a long PDF trying to find one specific piece of information? Yeah, me too. That's why I built this.
+SmartDocQA lets you upload any document and just ask questions about it. No more ctrl+F or endless scrolling - just ask in plain English and get answers powered by AI.
+What does it do?
+Pretty simple actually:
 
-A full-stack microservices application that enables users to upload documents and ask natural language questions, receiving intelligent AI-powered answers.
+Upload a PDF, Word doc, or text file
+Ask it questions like "What's this about?" or "What are the main points?"
+Get instant answers from the AI
 
-[![GitHub](https://img.shields.io/badge/GitHub-SmartDocQA-blue)](https://github.com/gattupranay/SmartDocQA)
-[![.NET](https://img.shields.io/badge/.NET-8.0-purple)](https://dotnet.microsoft.com/)
-[![Python](https://img.shields.io/badge/Python-3.11-yellow)](https://www.python.org/)
-[![React](https://img.shields.io/badge/React-18-blue)](https://reactjs.org/)
+The app reads your document, understands the content, and answers based on what's actually in there.
+How I built it
+This was my first time combining three completely different tech stacks into one project. Here's what's under the hood:
+The Backend (.NET Core)
 
----
+Handles all the API requests and file uploads
+Stores documents and their content in a SQLite database
+Built with ASP.NET Core 8 and Entity Framework Core
 
-## 📋 Overview
+The AI Part (Python)
 
-SmartDocQA is an intelligent document analysis platform that combines modern web technologies with AI to provide an intuitive question-answering system. Users can upload documents in various formats and interact with them through natural language queries, powered by OpenAI's GPT models.
+Extracts text from PDFs and Word documents
+Sends the content + your question to OpenAI's GPT-3.5
+Returns the AI's answer back to you
+Used FastAPI because it's fast and easy to work with
 
-### Key Features
+The Frontend (React)
 
-- 📤 **Multi-Format Support**: Upload PDF, DOCX, and TXT documents
-- 🤖 **AI-Powered Q&A**: Natural language question answering using GPT-3.5
-- 🔍 **Smart Text Extraction**: Automatic content extraction from various formats
-- 💾 **Persistent Storage**: Document management with SQLite database
-- ⚡ **Real-Time Processing**: Fast response times with optimized architecture
-- 🎨 **Modern UI**: Clean, responsive React interface
+Clean interface where you upload files and ask questions
+Shows your uploaded documents and lets you select which one to query
+Built with React because I wanted to learn it better
 
----
+All three parts talk to each other through REST APIs. It's a microservices setup, which sounds fancy but really just means each piece does its own job independently.
+Getting it running
+What you'll need:
 
-## 🛠️ Tech Stack
+.NET SDK 8.0 or newer
+Python 3.11 or newer
+Node.js (for React)
+An OpenAI API key 
 
-### Backend (.NET Core)
-- **ASP.NET Core 8** - Web API framework
-- **Entity Framework Core** - ORM for database operations
-- **SQLite** - Lightweight database
-- **RESTful API** - Clean API architecture
+Setup steps:
 
-### AI Service (Python)
-- **FastAPI** - High-performance Python web framework
-- **OpenAI GPT-3.5** - Natural language processing
-- **PyPDF2** - PDF text extraction
-- **python-docx** - Word document processing
+Clone this repo
 
-### Frontend
-- **React.js 18** - UI framework
-- **Modern CSS3** - Responsive design
-- **Fetch API** - RESTful communication
+bash   git clone https://github.com/gattupranay/SmartDocQA.git
+   cd SmartDocQA
 
----
+Start the .NET API
 
-## 🏗️ Architecture
+bash   cd DocAPI
+   dotnet restore
+   dotnet run
+This runs on http://localhost:5161
 
-```
-┌─────────────────┐
-│   React UI      │  (Port 3000)
-│   Frontend      │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│  .NET Core API  │  (Port 5161)
-│  Main Backend   │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│ Python FastAPI  │  (Port 8000)
-│   AI Service    │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│   OpenAI API    │
-│   GPT-3.5       │
-└─────────────────┘
-```
+Start the Python AI service
 
-**Microservices Design:**
-- **Frontend Layer**: Handles user interactions and display
-- **API Gateway**: .NET Core manages requests, database, file storage
-- **AI Service**: Python handles document processing and AI inference
-- **External AI**: OpenAI provides natural language understanding
+bash   cd AIService
+   python -m venv venv
+   source venv/bin/activate  # Mac/Linux
+   # or venv\Scripts\activate on Windows
+   
+   pip install fastapi uvicorn openai python-multipart pypdf2 python-docx
+   
+   # IMPORTANT: Add your OpenAI API key in main.py
+   python main.py
+This runs on http://localhost:8000
 
----
+Start the React frontend
 
-## 🚀 Getting Started
+bash   cd frontend
+   npm install
+   npm start
+Opens at http://localhost:3000
+Now you should have all three services running. Open your browser to localhost:3000 and you're good to go!
+How to use it
+It's pretty straightforward:
 
-### Prerequisites
+Click the file upload button and pick a document
+Wait a sec while it processes (you'll see your doc appear in the list)
+Click on the document to select it
+Type your question in the box
+Hit "Get Answer" and wait for the AI to respond
 
-- **.NET SDK 8.0+** - [Download](https://dotnet.microsoft.com/download)
-- **Python 3.11+** - [Download](https://www.python.org/downloads/)
-- **Node.js 18+** - [Download](https://nodejs.org/)
-- **OpenAI API Key** - [Get Key](https://platform.openai.com/api-keys)
+Try questions like:
 
-### Installation
+"What is this document about?"
+"Summarize the main points"
 
-#### 1. Clone the Repository
-```bash
-git clone https://github.com/gattupranay/SmartDocQA.git
-cd SmartDocQA
-```
 
-#### 2. Setup .NET API
-```bash
-cd DocAPI
-dotnet restore
-dotnet run
-```
-API will run on `http://localhost:5161`
+How to get different tech stacks to work together (harder than I thought!)
+Integrating AI APIs into real applications
+Building a proper microservices architecture
+Managing state in React
+Working with OpenAI's API and prompt engineering
 
-#### 3. Setup Python AI Service
-```bash
-cd AIService
-python -m venv venv
-source venv/bin/activate  # On Mac/Linux
-# OR
-venv\Scripts\activate  # On Windows
+The trickiest part was getting the services to communicate properly. CORS issues, API endpoints not matching up, making sure the AI got the right context - lots of debugging involved.
+Tech stack
 
-pip install fastapi uvicorn openai python-multipart pypdf2 python-docx
+Backend: ASP.NET Core 8, Entity Framework Core, SQLite
+AI Service: Python, FastAPI, OpenAI GPT-3.5
+Frontend: React.js
+Document Processing: PyPDF2 (for PDFs), python-docx (for Word files)
 
-# Add your OpenAI API key in main.py
-# Then run:
-python main.py
-```
-AI Service will run on `http://localhost:8000`
+What's next?
+Some ideas I'm thinking about:
 
-#### 4. Setup Frontend
-```bash
-cd frontend
-npm install
-npm start
-```
-Frontend will run on `http://localhost:3000`
+Add document summarization
+Support for more file types (maybe images with OCR?)
+Compare multiple documents
+Save Q&A history
+Better error handling
+Deploy it somewhere so people can actually use it
 
----
+A few notes
 
-## 💡 Usage
+You'll need to add your own OpenAI API key 
+The free tier should be enough for testing
+Documents are stored locally in a SQLite database
 
-1. **Upload Document**: Click "Choose File" and select a PDF, DOCX, or TXT file
-2. **Select Document**: Click on the uploaded document from the list
-3. **Ask Question**: Type your question in natural language
-4. **Get Answer**: Click "Get Answer" to receive AI-generated response
+Issues or questions?
+Found a bug? Have a question? Feel free to open an issue. I'm still learning so feedback is always welcome!
+About me
+I'm Pranay, a developer interested in AI and full-stack development. This is one of my learning projects where I'm combining different technologies to build something practical.
 
-### Example Questions
-- "What is this document about?"
-- "Summarize the main points"
-- "What are the key findings?"
-- "Explain the methodology used"
+GitHub: @gattupranay
+LinkedIn: https://www.linkedin.com/in/pranay-gattu-3025091a0/
 
----
-
-## 📊 Database Schema
-
-```sql
-Documents Table:
-├── Id (Primary Key)
-├── FileName (String)
-├── FilePath (String)
-├── Content (Text - Extracted content)
-└── UploadedAt (DateTime)
-```
-
----
-
-## 🎯 Skills Demonstrated
-
-### Backend Development
-✅ RESTful API Design  
-✅ Microservices Architecture  
-✅ Entity Framework Core ORM  
-✅ Database Design & Management  
-✅ File Upload Handling  
-
-### AI/ML Integration
-✅ OpenAI API Integration  
-✅ Natural Language Processing  
-✅ Document Text Extraction  
-✅ Prompt Engineering  
-
-### Frontend Development
-✅ React.js Components  
-✅ State Management  
-✅ Responsive Design  
-✅ API Integration  
-
-### DevOps & Tools
-✅ Git Version Control  
-✅ Environment Configuration  
-✅ Cross-platform Development  
-
----
-
-## 🔮 Future Enhancements
-
-- [ ] Multi-document comparison and analysis
-- [ ] Document summarization feature
-- [ ] Sentiment analysis
-- [ ] Export Q&A history to PDF
-- [ ] User authentication and authorization
-- [ ] Cloud deployment (Azure/AWS)
-- [ ] Vector database integration for semantic search
-- [ ] Support for more document formats
-- [ ] Batch document processing
-- [ ] Advanced analytics dashboard
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Feel free to open issues or submit pull requests.
-
----
-
-## 📝 License
-
-This project is open source and available under the [MIT License](LICENSE).
-
----
-
-## 👤 Author
-
-**Pranay Gattu**
-
-- GitHub: [@gattupranay](https://github.com/gattupranay)
-- LinkedIn: [Add Your LinkedIn](https://linkedin.com/in/yourprofile)
-- Portfolio: [Add Your Website]
-
----
-
-## 🙏 Acknowledgments
-
-- OpenAI for GPT API
-- Microsoft for .NET Core
-- FastAPI team for the excellent Python framework
-- React community
-
----
-
-## 📧 Contact
-
-For questions or feedback, please open an issue or reach out via [your email].
-
----
-
-**⭐ If you found this project helpful, please give it a star!**
+If this helped you or you found it interesting, a ⭐ would be awesome!
